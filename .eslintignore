@@ -11,3 +11,4 @@ coverage
 .jest
 
 src/__tests__/__fixtures__/**
+*.md

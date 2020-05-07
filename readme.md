@@ -19,8 +19,8 @@
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [Setup](#setup)
-      - [`.babelrc`](#babelrc)
-      - [`babel.config.js`](#babelconfigjs)
+        - [`.babelrc`](#babelrc)
+        - [`babel.config.js`](#babelconfigjs)
     - [Code Example](#code-example)
   - [API](#api)
   - [Contributing](#contributing)
@@ -58,7 +58,7 @@ Once installed make sure to add the 'babel-plugin-macros' to your `babel.config.
 {
   "plugins": [
     "other-plugins",
-+   "macro",
++   "macros",
   ]
 }
 ```

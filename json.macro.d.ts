@@ -1,13 +1,14 @@
 import { JsonValue, PackageJson, TsConfigJson } from 'type-fest';
 
 /**
- * Load a relative json file or resolve from from node_modules.
- *
  * This loads a json file from the provided path. The path can be relative to
- * the file it's being used from or an absolute path. If the file can't be
- * resolved the build will fail.
+ * the file it's being used from, an absolute path, or a path to your
+ * `node_modules` folder.
+ *
+ * If the file can't be resolved the build will fail.
  *
  * For the following json file: `./my-json.json`
+ *
  * ```json
  * {
  *   "custom": 1,
@@ -42,6 +43,17 @@ import { JsonValue, PackageJson, TsConfigJson } from 'type-fest';
  *
  * The above will be replaced with the full package.json file from the
  * json.macro node_modules package.
+ *
+ * If you are using typescript you can specify the expected return type by
+ * annotating the variable created.
+ *
+ * @example
+ *
+ * ```ts
+ * import { loadJson } from 'json.macro';
+ *
+ * const myJson: { custom: number } = loadJson('my-json.json');
+ * ```
  */
 export function loadJson(filePath: string): any;
 
@@ -65,7 +77,7 @@ export function loadJson(filePath: string): any;
  * ```
  *
  * If you are using typescript you can specify the expected return type by
- * annotating the variable created
+ * annotating the variable created.
  *
  * ```ts
  * import { loadJsonFiles } from 'json.macro';
