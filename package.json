@@ -1,0 +1,159 @@
+{
+  "name": "json.macro",
+  "version": "1.0.0",
+  "description": "Directly load json files into your code via babel macros.",
+  "keywords": [
+    "macros",
+    "babel",
+    "json",
+    "load json",
+    "dynamic",
+    "json-loader",
+    "string",
+    "babel-macros",
+    "babel-plugin-macros"
+  ],
+  "homepage": "https://github.com/ifiokjr/json.macro#readme",
+  "bugs": {
+    "url": "https://github.com/ifiokjr/json.macro/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ifiokjr/json.macro.git"
+  },
+  "funding": "https://github.com/sponsors/ifiokjr",
+  "license": "MIT",
+  "author": {
+    "name": "Ifiok Jr.",
+    "email": "ifiokotung@gmail.com",
+    "url": "https://ifiokjr.com"
+  },
+  "main": "dist/json.macro.cjs.js",
+  "module": "dist/json.macro.esm.js",
+  "types": "json.macro.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "run-p build:*",
+    "build:declaration": "tsc -p ./tsconfig.build.json",
+    "build:js": "preconstruct build",
+    "checks": "run-s typecheck lint test",
+    "fix": "run-s fix:prettier fix:es",
+    "fix:es": "yarn lint:es --fix",
+    "fix:prettier": "yarn run:prettier --write",
+    "lint": "run-s lint:*",
+    "lint:es": "eslint -f github --ext=.tsx,.ts,.js .",
+    "lint:prettier": "yarn run:prettier \"!**/CHANGELOG.md\" --check",
+    "prepare": "run-s build",
+    "run:prettier": "prettier --ignore-path .eslintignore \"**/*.{js,jsx,ts,tsx,md,mdx,json,html,css,yml,yaml,graphql}\"",
+    "test": "jest --verbose",
+    "test:watch": "jest  --watch --verbose=false --coverage=false",
+    "typecheck": "tsc"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn checks"
+    }
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-packagejson"
+    ],
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "resolutions": {
+    "mem": ">=4",
+    "minimist": ">=1.2.2",
+    "prettier": "^2"
+  },
+  "dependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/parser": "^7.9.6",
+    "@babel/runtime": "^7.9.6",
+    "@types/babel-plugin-macros": "^2.8.1",
+    "globby": "^11.0.0",
+    "json5": "^2.1.3",
+    "pkg-up": "^3.1.0",
+    "tsconfig-resolver": "^3.0.1",
+    "type-fest": "^0.13.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.9.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "@babel/plugin-proposal-private-methods": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
+    "@jest/types": "^26.0.1",
+    "@preconstruct/cli": "^1.1.14",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@sindresorhus/tsconfig": "0.7.0",
+    "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "babel-jest": "^26.0.0",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
+    "babel-plugin-dev-expression": "^0.2.2",
+    "babel-plugin-macros": "^2.8.0",
+    "babel-plugin-tester": "^9.0.1",
+    "conventional-changelog-conventionalcommits": "^4.2.3",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-formatter-github": "^0.4.2",
+    "eslint-plugin-simple-import-sort": "^5.0.2",
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "jest-circus": "^26.0.1",
+    "jest-github-reporter": "^0.4.4",
+    "jest-watch-typeahead": "^0.6.0",
+    "lint-staged": "^10.2.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.5",
+    "prettier-plugin-packagejson": "^2.2.3",
+    "semantic-release": "^17.0.7",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "babel-plugin-macros": "^2.8.0"
+  },
+  "release": {
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadJson dynamic values: dynamic values 1`] = `
+
+import { loadJson } from '../macro.js';
+      const fileName = './__fixtures__/one.test' + '.json';
+      const loadedFile = loadJson(fileName);
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const fileName = './__fixtures__/one.test' + '.json';
+const loadedFile = {
+  simple: 'json',
+};
+
+
+`;
+
+exports[`loadJson pseudo-dynamic values: pseudo-dynamic values 1`] = `
+
+import { loadJson } from '../macro.js';
+      const fileName = './__fixtures__/one.test' + '.json';
+      const loadedFile = loadJson(fileName);
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const fileName = './__fixtures__/one.test' + '.json';
+const loadedFile = {
+  simple: 'json',
+};
+
+
+`;
+
+exports[`loadJson run correctly: run correctly 1`] = `
+
+import { loadJson } from '../macro.js';
+
+      const loadedFile = loadJson('./__fixtures__/one.test.json');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const loadedFile = {
+  simple: 'json',
+};
+
+
+`;
+
+exports[`loadJsonFiles run correctly: run correctly 1`] = `
+
+import { loadJsonFiles } from '../macro.js';
+      const loadedFiles = loadJsonFiles('__fixtures__/*.test.json', '**/four.json');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const loadedFiles = [
+  {
+    simple: 'json',
+  },
+  {
+    hello: 'friend',
+  },
+  ['an', 'array', 'of', 'strings', 5, 'nope'],
+];
+
+
+`;
+
+exports[`loadPackageJson get key: get key 1`] = `
+
+import { loadPackageJson } from '../../macro.js';
+      const name = loadPackageJson('name');
+      const notReal = loadPackageJson('not real');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const name = 'awesome';
+const notReal = null;
+
+
+`;
+
+exports[`loadPackageJson run correctly: run correctly 1`] = `
+
+import { loadPackageJson } from '../../macro.js';
+      const packageJson = loadPackageJson();
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const packageJson = {
+  name: 'awesome',
+  version: '1.0.0',
+};
+
+
+`;
+
+exports[`loadTsConfigJson get different name: get different name 1`] = `
+
+import { loadTsConfigJson } from '../../macro.js';
+      const name = loadTsConfigJson('tsconfig.awesome.json');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const name = {
+  compilerOptions: {
+    paths: {},
+    allowJs: true,
+  },
+  extends: './tsconfig.json',
+};
+
+
+`;
+
+exports[`loadTsConfigJson run correctly: run correctly 1`] = `
+
+import { loadTsConfigJson } from '../../macro.js';
+      const packageJson = loadTsConfigJson();
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const packageJson = {
+  compilerOptions: {
+    paths: {},
+  },
+};
+
+
+`;
