@@ -1,3 +1,11 @@
+## [1.2.0](https://github.com/ifiokjr/json.macro/compare/v1.1.0...v1.2.0) (2020-05-07)
+
+
+### Features
+
+* add path getter to `loadJson` method for picking desired property ([15320a7](https://github.com/ifiokjr/json.macro/commit/15320a7cb629d8ea5f8e1ff623d672c326899db7))
+* allow chaining of methods by wrapping in parentheses ([531fa1f](https://github.com/ifiokjr/json.macro/commit/531fa1ffb80209bbd978f59b59b98482c547e1e0)), closes [#1](https://github.com/ifiokjr/json.macro/issues/1)
+
 ## [1.1.0](https://github.com/ifiokjr/json.macro/compare/v1.0.0...v1.1.0) (2020-05-07)
 
 
