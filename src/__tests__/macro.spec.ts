@@ -2,6 +2,8 @@ import plugin from 'babel-plugin-macros';
 import pluginTester from 'babel-plugin-tester';
 import { join } from 'path';
 
+const macroPath = join(__dirname, '../macro.js');
+
 pluginTester({
   plugin,
   pluginName: 'json.macro',
@@ -70,14 +72,11 @@ pluginTester({
       babelOptions: {
         filename: '/asdf/asdf/asdf',
       },
-      code: `import { loadPackageJson } from '${join(
-        __dirname,
-        '../macro.js',
-      )}';
+      code: `import { loadPackageJson } from '${macroPath}';
       const notReal = loadPackageJson();
       `,
       error:
-        "No package.json file could be loaded from your current file. '/asdf/asdf/asdf'",
+        "No package.json file could be loaded from your current directory. '/asdf/asdf'",
       snapshot: false,
     },
     'invalid argument': {
@@ -98,6 +97,26 @@ pluginTester({
 pluginTester({
   plugin,
   pluginName: 'json.macro',
+  title: 'no filename',
+  snapshot: true,
+  babelOptions: {
+    filename: undefined,
+  },
+  tests: {
+    'no filename': {
+      code: `import { loadJson } from '${macroPath}';
+
+      const loadedFile = loadJson('./__fixtures__/one.test.json');`,
+      error:
+        'json.macro methods can only be used on files and no filename was found',
+      snapshot: false,
+    },
+  },
+});
+
+pluginTester({
+  plugin,
+  pluginName: 'json.macro',
   title: 'loadJson',
   snapshot: true,
   babelOptions: {
@@ -110,6 +129,7 @@ pluginTester({
 
       const loadedFile = loadJson('./__fixtures__/one.test.json');`,
     },
+
     'no argument': {
       code: `import { loadJson } from '../macro.js';
         const loadedFile = loadJson();`,
@@ -201,6 +221,67 @@ pluginTester({
      `,
       snapshot: false,
       error: "The file patterns provided didn't match any files:",
+    },
+  },
+});
+
+pluginTester({
+  plugin,
+  pluginName: 'json.macro',
+  title: 'getVersion',
+  snapshot: true,
+  babelOptions: {
+    filename: join(__dirname, '__fixtures__', 'file.js'),
+  },
+
+  tests: {
+    'run correctly': {
+      code: `import { getVersion } from '../../macro.js';
+      const version = getVersion();
+      const versionAlt = getVersion(false);
+      const versionObject = getVersion(true);
+      `,
+      snapshot: true,
+    },
+    'no package.json': {
+      babelOptions: {
+        filename: '/asdf/asdf/asdf',
+      },
+      code: `import { getVersion } from '${macroPath}';
+      const version = getVersion();
+      `,
+      error:
+        "No package.json file could be loaded from your current directory. '/asdf/asdf'",
+      snapshot: false,
+    },
+    'no version': {
+      code: `import { getVersion } from '${macroPath}';
+      const version = getVersion();`,
+      error: 'No version found for the resolved `package.json` file.',
+      snapshot: false,
+      babelOptions: {
+        filename: join(__dirname, '__fixtures__', 'no-version', 'file.js'),
+      },
+    },
+    'invalid version': {
+      code: `import { getVersion } from '${macroPath}';
+      const version = getVersion(true);`,
+      error:
+        "A semantic versioning object could not be parsed from the invalid string: 'invalid sever version'",
+      snapshot: false,
+      babelOptions: {
+        filename: join(__dirname, '__fixtures__', 'invalid-version', 'file.js'),
+      },
+    },
+    'invalid version string': {
+      code: `import { getVersion } from '${macroPath}';
+      const version = getVersion(false);`,
+      error:
+        "A semantic versioning object could not be parsed from the invalid string: 'invalid sever version'",
+      snapshot: false,
+      babelOptions: {
+        filename: join(__dirname, '__fixtures__', 'invalid-version', 'file.js'),
+      },
     },
   },
 });

@@ -1,4 +1,4 @@
-import { PackageJson, TsConfigJson } from 'type-fest';
+import { PackageJson, SemanticVersionObject, TsConfigJson } from './types';
 
 /**
  * This loads a json file from the provided path. The path can be relative to
@@ -145,3 +145,31 @@ export function loadPackageJson<Key extends string>(key: Key): PackageJson[Key];
  */
 export function loadTsConfigJson(): TsConfigJson;
 export function loadTsConfigJson(fileName: string): TsConfigJson;
+
+/**
+ * Get the semver compatible version from the package.json file.
+ *
+ * This will throw a built error if the semver version in your package.json is
+ * not valid.
+ *
+ * @example
+ *
+ * ```js
+ * import { getVersion } from 'json.macro';
+ *
+ * const versionString = getVersion();
+ * const versionStringAlt = getVersion(false);
+ * const versionObject = getVersion(true);
+ * ```
+ *
+ * Compiles to
+ * ↓ ↓ ↓ ↓ ↓ ↓
+ *
+ * ```js
+ * const versionString = '1.19.2';
+ * const versionStringAlt = '1.19.2';
+ * const versionObject = { major: 1, minor: 19, patch: 2, version: '1.19.2' }
+ * ```
+ */
+export function getVersion(verbose?: false): string;
+export function getVersion(verbose: true): SemanticVersionObject;

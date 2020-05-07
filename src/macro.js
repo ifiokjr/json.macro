@@ -5,6 +5,7 @@ import glob from 'globby';
 import JSON from 'json5';
 import { dirname, resolve } from 'path';
 import findPackageJson from 'pkg-up';
+import { parse } from 'semver';
 import {
   CacheStrategy,
   DEFAULT_SEARCH_NAME,
@@ -153,7 +154,94 @@ function loadAndParseJsonFile({ filePath, parentPath }) {
  * @returns {string}
  */
 function getFileName(state) {
-  return state.file.opts.filename;
+  const fileName = state.file.opts.filename;
+
+  if (!fileName) {
+    throw new JsonMacroError(
+      'json.macro methods can only be used on files and no filename was found',
+    );
+  }
+
+  return fileName;
+}
+
+/**
+ * Loads the nearest `package.json` file throws an error if there is
+ * problem doing do.
+ *
+ * @param {Object} options
+ * @param {string} options.cwd - the current working directory
+ * @param {NodePath} options.parentPath
+ *
+ * @returns {import('type-fest').PackageJson}
+ */
+function loadAndParsePackageJsonFile(options) {
+  const { cwd, parentPath } = options;
+  const filePath = findPackageJson.sync({ cwd });
+
+  if (!filePath) {
+    frameError(
+      parentPath,
+      `No package.json file could be loaded from your current directory. '${cwd}'`,
+    );
+  }
+
+  return loadAndParseJsonFile({ filePath, parentPath });
+}
+
+/**
+ * Loads the version from the nearest package.json file.
+ *
+ * @param { MethodParams } options
+ */
+function getVersion({ reference, state, babel }) {
+  const filename = getFileName(state);
+
+  const { parentPath } = reference;
+  const cwd = dirname(filename);
+
+  const node = getFirstArgumentNode({ parentPath, required: false });
+  const shouldLoadObject = node && node?.evaluate().value === true;
+
+  const jsonValue = loadAndParsePackageJsonFile({ cwd, parentPath });
+  const stringVersion = jsonValue.version;
+
+  if (!stringVersion) {
+    frameError(
+      parentPath,
+      'No version found for the resolved `package.json` file.',
+    );
+  }
+
+  /** @type {string | import('../types').SemanticVersion} */
+  let value = stringVersion;
+
+  /** @type {import('../types').SemanticVersion | null} */
+
+  const semver = parse(stringVersion);
+  if (!semver) {
+    frameError(
+      parentPath,
+      `A semantic versioning object could not be parsed from the invalid string: '${stringVersion}'`,
+    );
+  }
+
+  if (shouldLoadObject) {
+    value = {
+      build: semver.build,
+      loose: semver.loose,
+      major: semver.major,
+      minor: semver.minor,
+      patch: semver.patch,
+      prerelease: semver.prerelease,
+      raw: semver.raw,
+      version: semver.version,
+    };
+  }
+
+  reference.parentPath.replaceWith(
+    babel.types.expressionStatement(parseExpression(JSON.stringify(value))),
+  );
 }
 
 /**
@@ -176,16 +264,7 @@ function loadPackageJson({ reference, state, babel }) {
       })
     : undefined;
 
-  const filePath = findPackageJson.sync({ cwd });
-
-  if (!filePath) {
-    frameError(
-      parentPath,
-      `No package.json file could be loaded from your current file. '${filename}'`,
-    );
-  }
-
-  const jsonValue = loadAndParseJsonFile({ filePath, parentPath });
+  const jsonValue = loadAndParsePackageJsonFile({ cwd, parentPath });
   const value = key ? jsonValue[key] ?? null : jsonValue;
 
   reference.parentPath.replaceWith(
@@ -348,6 +427,7 @@ function checkReferenceExists(options) {
 const supportedMethods = [
   { name: 'loadJson', method: loadJson },
   { name: 'loadJsonFiles', method: loadJsonFiles },
+  { name: 'getVersion', method: getVersion },
   { name: 'loadPackageJson', method: loadPackageJson },
   { name: 'loadTsConfigJson', method: loadTsConfigJson },
 ];

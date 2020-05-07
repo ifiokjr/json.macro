@@ -22,6 +22,7 @@
         - [`.babelrc`](#babelrc)
         - [`babel.config.js`](#babelconfigjs)
     - [Code Example](#code-example)
+  - [Pitfalls](#pitfalls)
   - [API](#api)
     - [`json.macro/types`](#jsonmacrotypes)
   - [Contributing](#contributing)
@@ -107,6 +108,42 @@ const myJson = { custom: 1 };
 ```
 
 Like magic :-)
+
+
+
+
+<br />
+
+
+## Pitfalls
+
+Avoid chaining calls to any of the methods exported by this package. While it may work sometimes the function calls are compiled away which can lead to syntactic errors.
+
+For example.
+
+`./hello.json`
+
+```json
+{ "hello": "world" }
+```
+
+`./file.js`
+
+```js
+import { loadJson } from 'json.macro';
+
+const helloWorld = loadJson('./hello.json').hello;
+```
+
+While the above is valid javascript it would lead to a syntax error due to the way the macro will be compiled.
+
+The compiled output will look like this.
+
+```js
+const helloWorld = { hello: 'world' }.hello;
+```
+
+This code is not valid syntax and your build will **blow up**.
 
 <br />
 

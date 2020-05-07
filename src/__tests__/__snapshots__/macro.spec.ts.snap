@@ -1,5 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`getVersion run correctly: run correctly 1`] = `
+
+import { getVersion } from '../../macro.js';
+      const version = getVersion();
+      const versionAlt = getVersion(false);
+      const versionObject = getVersion(true);
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const version = '11.14.2-rc.123+a.2.56';
+const versionAlt = '11.14.2-rc.123+a.2.56';
+const versionObject = {
+  build: ['a', '2', '56'],
+  loose: false,
+  major: 11,
+  minor: 14,
+  patch: 2,
+  prerelease: ['rc', 123],
+  raw: '11.14.2-rc.123+a.2.56',
+  version: '11.14.2-rc.123',
+};
+
+
+`;
+
 exports[`loadJson pseudo-dynamic values: pseudo-dynamic values 1`] = `
 
 import { loadJson } from '../macro.js';
@@ -74,7 +99,7 @@ import { loadPackageJson } from '../../macro.js';
 
 const packageJson = {
   name: 'awesome',
-  version: '1.0.0',
+  version: '11.14.2-rc.123+a.2.56',
 };
 
 
