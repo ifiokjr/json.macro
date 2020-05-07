@@ -1,4 +1,4 @@
-import { JsonValue, PackageJson, TsConfigJson } from 'type-fest';
+import { PackageJson, TsConfigJson } from 'type-fest';
 
 /**
  * This loads a json file from the provided path. The path can be relative to

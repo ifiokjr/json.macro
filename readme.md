@@ -23,6 +23,7 @@
         - [`babel.config.js`](#babelconfigjs)
     - [Code Example](#code-example)
   - [API](#api)
+    - [`json.macro/types`](#jsonmacrotypes)
   - [Contributing](#contributing)
   - [Versioning](#versioning)
   - [License](#license)
@@ -112,6 +113,17 @@ Like magic :-)
 ## API
 
 The best way to learn about the API is be reading through the definition file documentation in [`json.macro.d.ts`](https://github.com/ifiokjr/json.macro/blob/master/json.macro.d.ts)
+
+### `json.macro/types`
+
+You might find yourself wanting to use the `PackageJson` or `TsConfigJson` types in your own code. For this reason this file re-exports them from `type-fest` to save you the hassle of adding another direct dependency.
+
+```ts
+import { PackageJson, TsConfigJson } from 'json.macro/types';
+
+let pkg: PackageJson;
+let tsconfig: TsConfigJson;
+```
 
 <br />
 
