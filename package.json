@@ -33,6 +33,7 @@
   "types": "json.macro.d.ts",
   "files": [
     "src",
+    "json.macro.d.ts",
     "dist"
   ],
   "scripts": {
