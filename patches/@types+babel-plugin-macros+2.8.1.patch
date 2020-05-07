@@ -1,0 +1,27 @@
+diff --git a/node_modules/@types/babel-plugin-macros/index.d.ts b/node_modules/@types/babel-plugin-macros/index.d.ts
+index 4060dca..d4dfeab 100644
+--- a/node_modules/@types/babel-plugin-macros/index.d.ts
++++ b/node_modules/@types/babel-plugin-macros/index.d.ts
+@@ -2,6 +2,7 @@
+ // Project: https://github.com/kentcdodds/babel-plugin-macros
+ // Definitions by: Billy Kwok <https://github.com/billykwok>
+ //                 Jake Runzer <https://github.com/coffee-cup>
++//                 Ifiok Jr. <https://github.com/ifiokjr>
+ // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+ // Minimum TypeScript Version: 3.4
+ 
+@@ -17,7 +18,7 @@ export interface Options {
+ 
+ export interface MacroParams {
+     references: { default: Babel.NodePath[] } & References;
+-    state: any;
++    state: Babel.PluginPass;
+     babel: typeof Babel;
+ }
+ 
+@@ -26,3 +27,5 @@ export type MacroHandler = (params: MacroParams) => void;
+ export class MacroError extends Error {}
+ 
+ export function createMacro(handler: MacroHandler, options?: Options): any;
++
++export default function(babel: typeof Babel, options: any): Babel.PluginObj;
