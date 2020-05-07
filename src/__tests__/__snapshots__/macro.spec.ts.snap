@@ -9,9 +9,9 @@ import { getVersion } from '../../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const version = '11.14.2-rc.123+a.2.56';
-const versionAlt = '11.14.2-rc.123+a.2.56';
-const versionObject = {
+const version = (_temp = '11.14.2-rc.123+a.2.56');
+const versionAlt = (_temp2 = '11.14.2-rc.123+a.2.56');
+const versionObject = (_temp3 = {
   build: ['a', '2', '56'],
   loose: false,
   major: 11,
@@ -20,7 +20,7 @@ const versionObject = {
   prerelease: ['rc', 123],
   raw: '11.14.2-rc.123+a.2.56',
   version: '11.14.2-rc.123',
-};
+});
 
 
 `;
@@ -34,9 +34,9 @@ import { loadJson } from '../macro.js';
       ↓ ↓ ↓ ↓ ↓ ↓
 
 const fileName = './__fixtures__/one.test' + '.json';
-const loadedFile = {
+const loadedFile = (_temp = {
   simple: 'json',
-};
+});
 
 
 `;
@@ -49,9 +49,24 @@ import { loadJson } from '../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const loadedFile = {
+const loadedFile = (_temp = {
   simple: 'json',
-};
+});
+
+
+`;
+
+exports[`loadJson use property: use property 1`] = `
+
+import { loadJson } from '../macro.js';
+
+      const loadedFile = loadJson('./__fixtures__/one.test.json').simple;
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const loadedFile = (_temp = {
+  simple: 'json',
+}).simple;
 
 
 `;
@@ -63,7 +78,7 @@ import { loadJsonFiles } from '../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const loadedFiles = [
+const loadedFiles = (_temp = [
   {
     simple: 'json',
   },
@@ -71,7 +86,7 @@ const loadedFiles = [
     hello: 'friend',
   },
   ['an', 'array', 'of', 'strings', 5, 'nope'],
-];
+]);
 
 
 `;
@@ -84,8 +99,8 @@ import { loadPackageJson } from '../../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const name = 'awesome';
-const notReal = null;
+const name = (_temp = 'awesome');
+const notReal = (_temp2 = null);
 
 
 `;
@@ -97,10 +112,10 @@ import { loadPackageJson } from '../../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const packageJson = {
+const packageJson = (_temp = {
   name: 'awesome',
   version: '11.14.2-rc.123+a.2.56',
-};
+});
 
 
 `;
@@ -112,13 +127,13 @@ import { loadTsConfigJson } from '../../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const name = {
+const name = (_temp = {
   compilerOptions: {
     paths: {},
     allowJs: true,
   },
   extends: './tsconfig.json',
-};
+});
 
 
 `;
@@ -130,11 +145,11 @@ import { loadTsConfigJson } from '../../macro.js';
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const packageJson = {
+const packageJson = (_temp = {
   compilerOptions: {
     paths: {},
   },
-};
+});
 
 
 `;

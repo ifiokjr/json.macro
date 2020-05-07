@@ -129,7 +129,11 @@ pluginTester({
 
       const loadedFile = loadJson('./__fixtures__/one.test.json');`,
     },
+    'use property': {
+      code: `import { loadJson } from '../macro.js';
 
+      const loadedFile = loadJson('./__fixtures__/one.test.json').simple;`,
+    },
     'no argument': {
       code: `import { loadJson } from '../macro.js';
         const loadedFile = loadJson();`,

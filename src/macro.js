@@ -190,6 +190,28 @@ function loadAndParsePackageJsonFile(options) {
 }
 
 /**
+ * @param {Object} options
+ * @param {unknown} options.value
+ * @param {MacroParams['babel']} options.babel - the babel object
+ * @param {NodePath} options.parentPath
+ * @param {import('@babel/core').PluginPass} options.state
+ */
+function replaceParentExpression(options) {
+  const { babel, parentPath, value, state } = options;
+
+  const expression = babel.types.parenthesizedExpression(
+    parseExpression(
+      `${state.file.scope.generateUidIdentifier().name} = ${JSON.stringify(
+        value,
+      )}`,
+      {},
+    ),
+  );
+
+  parentPath.replaceWith(expression);
+}
+
+/**
  * Loads the version from the nearest package.json file.
  *
  * @param { MethodParams } options
@@ -239,9 +261,7 @@ function getVersion({ reference, state, babel }) {
     };
   }
 
-  reference.parentPath.replaceWith(
-    babel.types.expressionStatement(parseExpression(JSON.stringify(value))),
-  );
+  replaceParentExpression({ babel, parentPath, value, state });
 }
 
 /**
@@ -267,9 +287,7 @@ function loadPackageJson({ reference, state, babel }) {
   const jsonValue = loadAndParsePackageJsonFile({ cwd, parentPath });
   const value = key ? jsonValue[key] ?? null : jsonValue;
 
-  reference.parentPath.replaceWith(
-    babel.types.expressionStatement(parseExpression(JSON.stringify(value))),
-  );
+  replaceParentExpression({ babel, parentPath, value, state });
 }
 
 /**
@@ -305,11 +323,7 @@ function loadTsConfigJson({ reference, state, babel }) {
     );
   }
 
-  reference.parentPath.replaceWith(
-    babel.types.expressionStatement(
-      parseExpression(JSON.stringify(result.config)),
-    ),
-  );
+  replaceParentExpression({ babel, parentPath, state, value: result.config });
 }
 
 /**
@@ -336,11 +350,9 @@ function loadJson({ reference, state, babel }) {
   } catch {
     frameError(parentPath, `The provided path: '${rawPath}' does not exist`);
   }
-  const jsonValue = loadAndParseJsonFile({ filePath, parentPath });
+  const value = loadAndParseJsonFile({ filePath, parentPath });
 
-  reference.parentPath.replaceWith(
-    babel.types.expressionStatement(parseExpression(JSON.stringify(jsonValue))),
-  );
+  replaceParentExpression({ babel, parentPath, value, state });
 }
 
 /**
@@ -381,15 +393,11 @@ function loadJsonFiles({ reference, state, babel }) {
     );
   }
 
-  const jsonValues = files.map((relativePath) =>
+  const value = files.map((relativePath) =>
     loadAndParseJsonFile({ filePath: resolve(dir, relativePath), parentPath }),
   );
 
-  reference.parentPath.replaceWith(
-    babel.types.expressionStatement(
-      parseExpression(JSON.stringify(jsonValues)),
-    ),
-  );
+  replaceParentExpression({ babel, parentPath, value, state });
 }
 
 /**
