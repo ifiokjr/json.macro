@@ -89,11 +89,6 @@ import { PackageJson, SemanticVersionObject, TsConfigJson } from './types';
 export function loadJson(filePath: string, path?: string): any;
 
 /**
-
- */
-export function loadJsonPath(filePath: string, path: string): any;
-
-/**
  * Load all the json files matching the provided glob patterns. If no files
  * match then an empty array is returned.
  *
