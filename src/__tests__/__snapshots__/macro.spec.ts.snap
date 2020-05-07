@@ -1,21 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loadJson dynamic values: dynamic values 1`] = `
-
-import { loadJson } from '../macro.js';
-      const fileName = './__fixtures__/one.test' + '.json';
-      const loadedFile = loadJson(fileName);
-
-      ↓ ↓ ↓ ↓ ↓ ↓
-
-const fileName = './__fixtures__/one.test' + '.json';
-const loadedFile = {
-  simple: 'json',
-};
-
-
-`;
-
 exports[`loadJson pseudo-dynamic values: pseudo-dynamic values 1`] = `
 
 import { loadJson } from '../macro.js';
