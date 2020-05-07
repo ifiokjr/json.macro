@@ -1,0 +1,5 @@
+{
+  "deeply": {
+    "nested": [{ "file": { "for": "you" } }]
+  }
+}

@@ -181,9 +181,16 @@ pluginTester({
     },
     'too many arguments': {
       code: `import { loadJson } from '../macro.js';
-        const loadedFile = loadJson('./__fixtures__/one.test.json', './__fixtures__/two.test.json');`,
+        const loadedFile = loadJson('./__fixtures__/one.test.json', 'b', 'a');`,
       error: 'Too many arguments provided to the function call:',
       snapshot: false,
+    },
+    'load path from json file': {
+      code: `import { loadJson } from '../macro.js';
+        const loadedFile = loadJson('./__fixtures__/three.other.json', 'deeply.nested.0.file.for');
+        const otherFile = loadJson('./__fixtures__/three.other.json', 'deeply.nested[0].file.for');
+        const noValue = loadJson('./__fixtures__/three.other.json', 'i.dont.exist');
+        `,
     },
   },
 });

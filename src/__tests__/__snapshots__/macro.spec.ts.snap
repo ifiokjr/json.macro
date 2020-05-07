@@ -25,6 +25,22 @@ const versionObject = (_temp3 = {
 
 `;
 
+exports[`loadJson load path from json file: load path from json file 1`] = `
+
+import { loadJson } from '../macro.js';
+        const loadedFile = loadJson('./__fixtures__/three.other.json', 'deeply.nested.0.file.for');
+        const otherFile = loadJson('./__fixtures__/three.other.json', 'deeply.nested[0].file.for');
+        const noValue = loadJson('./__fixtures__/three.other.json', 'i.dont.exist');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const loadedFile = (_temp = 'you');
+const otherFile = (_temp2 = 'you');
+const noValue = (_temp3 = undefined);
+
+
+`;
+
 exports[`loadJson pseudo-dynamic values: pseudo-dynamic values 1`] = `
 
 import { loadJson } from '../macro.js';

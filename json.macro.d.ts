@@ -54,8 +54,44 @@ import { PackageJson, SemanticVersionObject, TsConfigJson } from './types';
  *
  * const myJson: { custom: number } = loadJson('my-json.json');
  * ```
+ *
+ * If a second parameter is passed, this can also load a specific key path from
+ * a json file.
+ *
+ * @example
+ *
+ * `./my-json.json`
+ *
+ * ```json
+ * {
+ *   "a": {
+ *     "b": { "c": { "d": 1 } },
+ *     "arr": [1, 2, 3, 4, { "end" : true }]
+ *   }
+ * }
+ * ```
+ *
+ * ```js
+ * import { loadJsonPath } from 'json.macro';
+ *
+ * const value = loadJsonPath('my-json.json', 'a.b.c.d')
+ * const value2 = loadJsonPath('my-json.json', 'a.arr.4.end')
+ * ```
+ *
+ * Compiles to
+ * ↓ ↓ ↓ ↓ ↓ ↓
+ *
+ * ```js
+ * const value = 1;
+ * const value2 = true;
+ * ```
  */
-export function loadJson(filePath: string): any;
+export function loadJson(filePath: string, path?: string): any;
+
+/**
+
+ */
+export function loadJsonPath(filePath: string, path: string): any;
 
 /**
  * Load all the json files matching the provided glob patterns. If no files

@@ -3,6 +3,7 @@ import { createMacro, MacroError } from 'babel-plugin-macros';
 import { readFileSync } from 'fs';
 import glob from 'globby';
 import JSON from 'json5';
+import get from 'lodash.get';
 import { dirname, resolve } from 'path';
 import findPackageJson from 'pkg-up';
 import { parse } from 'semver';
@@ -92,23 +93,29 @@ function evaluateStringNodeValue({ parentPath, node, allowUndefined = false }) {
  *
  * @param {Object} options
  * @param {NodePath} options.parentPath
- * @param {boolean} [options.required] - whether the argument must be provided
- * @default true
+ * @param {boolean} [options.required=true] - whether the argument must be provided
+ * @param {number} [options.index=0] - the argument index to get
+ * @param {number} [options.maxArguments=1] - maximum number of arguments accepted
  *
  * @returns {NodePath | undefined}
  */
-function getFirstArgumentNode({ parentPath, required = true }) {
+function getArgumentNode({
+  parentPath,
+  required = true,
+  index = 0,
+  maxArguments = 1,
+}) {
   const nodes = parentPath.get('arguments');
   const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
 
-  if (nodeArray.length > 1) {
+  if (nodeArray.length > maxArguments) {
     frameError(
       parentPath,
       `Too many arguments provided to the function call: ${parentPath.getSource()}. This method only supports one or less.`,
     );
   }
 
-  const node = nodeArray?.[0];
+  const node = nodeArray?.[index];
 
   if (node === undefined && required) {
     frameError(
@@ -214,7 +221,7 @@ function replaceParentExpression(options) {
 /**
  * Loads the version from the nearest package.json file.
  *
- * @param { MethodParams } options
+ * @param {MethodParams} options
  */
 function getVersion({ reference, state, babel }) {
   const filename = getFileName(state);
@@ -222,7 +229,7 @@ function getVersion({ reference, state, babel }) {
   const { parentPath } = reference;
   const cwd = dirname(filename);
 
-  const node = getFirstArgumentNode({ parentPath, required: false });
+  const node = getArgumentNode({ parentPath, required: false });
   const shouldLoadObject = node && node?.evaluate().value === true;
 
   const jsonValue = loadAndParsePackageJsonFile({ cwd, parentPath });
@@ -267,7 +274,7 @@ function getVersion({ reference, state, babel }) {
 /**
  * Loads the nearest package.json file.
  *
- * @param { MethodParams } options
+ * @param {MethodParams} options
  */
 function loadPackageJson({ reference, state, babel }) {
   const filename = getFileName(state);
@@ -275,7 +282,7 @@ function loadPackageJson({ reference, state, babel }) {
   const { parentPath } = reference;
   const cwd = dirname(filename);
 
-  const node = getFirstArgumentNode({ parentPath, required: false });
+  const node = getArgumentNode({ parentPath, required: false });
   const key = node
     ? evaluateStringNodeValue({
         node,
@@ -293,7 +300,7 @@ function loadPackageJson({ reference, state, babel }) {
 /**
  * Loads the nearest package.json file.
  *
- * @param { MethodParams } options
+ * @param {MethodParams} options
  */
 function loadTsConfigJson({ reference, state, babel }) {
   const filename = getFileName(state);
@@ -301,7 +308,7 @@ function loadTsConfigJson({ reference, state, babel }) {
   const { parentPath } = reference;
   const cwd = dirname(filename);
 
-  const node = getFirstArgumentNode({ parentPath, required: false });
+  const node = getArgumentNode({ parentPath, required: false });
   const searchName = node
     ? evaluateStringNodeValue({
         node,
@@ -327,9 +334,9 @@ function loadTsConfigJson({ reference, state, babel }) {
 }
 
 /**
- * Handles loading a single json file.
+ * Handles loading a single json file with an optional object path parameter.
  *
- * @param { MethodParams } options
+ * @param {MethodParams} options
  */
 function loadJson({ reference, state, babel }) {
   const filename = getFileName(state);
@@ -337,20 +344,43 @@ function loadJson({ reference, state, babel }) {
   const { parentPath } = reference;
   const dir = dirname(filename);
 
-  const node = getFirstArgumentNode({ parentPath, required: true });
-  const rawPath = evaluateStringNodeValue({
-    node,
+  const rawFilePath = evaluateStringNodeValue({
+    node: getArgumentNode({
+      parentPath,
+      required: true,
+      maxArguments: 2,
+      index: 0,
+    }),
     parentPath,
   });
 
+  const node = getArgumentNode({
+    parentPath,
+    required: false,
+    maxArguments: 2,
+    index: 1,
+  });
+  const path = node
+    ? evaluateStringNodeValue({
+        node,
+        parentPath,
+      })
+    : undefined;
+
   /** @type {string} */
   let filePath;
+
   try {
-    filePath = require.resolve(rawPath, { paths: [dir] });
+    filePath = require.resolve(rawFilePath, { paths: [dir] });
   } catch {
-    frameError(parentPath, `The provided path: '${rawPath}' does not exist`);
+    frameError(
+      parentPath,
+      `The provided path: '${rawFilePath}' does not exist`,
+    );
   }
-  const value = loadAndParseJsonFile({ filePath, parentPath });
+
+  const jsonValue = loadAndParseJsonFile({ filePath, parentPath });
+  const value = path ? get(jsonValue, path) : jsonValue;
 
   replaceParentExpression({ babel, parentPath, value, state });
 }
@@ -358,7 +388,7 @@ function loadJson({ reference, state, babel }) {
 /**
  * Handles loading multiple json files by their glob pattern.
  *
- * @param { MethodParams } options
+ * @param {MethodParams} options
  */
 function loadJsonFiles({ reference, state, babel }) {
   const filename = getFileName(state);
