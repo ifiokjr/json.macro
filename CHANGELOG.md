@@ -1,3 +1,10 @@
+### [1.2.1](https://github.com/ifiokjr/json.macro/compare/v1.2.0...v1.2.1) (2020-05-07)
+
+
+### Bug Fixes
+
+* remove incorrect `loadJsonPath` typescript type ([eed13f5](https://github.com/ifiokjr/json.macro/commit/eed13f5273cf0a45c99f011c812752489ac0352f))
+
 ## [1.2.0](https://github.com/ifiokjr/json.macro/compare/v1.1.0...v1.2.0) (2020-05-07)
 
 
