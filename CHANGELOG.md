@@ -1,3 +1,10 @@
+### [1.2.3](https://github.com/ifiokjr/json.macro/compare/v1.2.2...v1.2.3) (2020-05-08)
+
+
+### Bug Fixes
+
+* remove postinstall hook causing installation failures ([e40e282](https://github.com/ifiokjr/json.macro/commit/e40e282e16cb1c21315c688d69ad2d337ea0946c))
+
 ### [1.2.2](https://github.com/ifiokjr/json.macro/compare/v1.2.1...v1.2.2) (2020-05-08)
 
 
