@@ -79,6 +79,7 @@
     "@babel/parser": "^7.9.6",
     "@babel/runtime": "^7.9.6",
     "@babel/types": "^7.9.6",
+    "@sindresorhus/is": "^2.1.1",
     "@types/babel-plugin-macros": "^2.8.1",
     "@types/lodash.get": "^4.4.6",
     "@types/semver": "^7.1.0",
@@ -107,6 +108,7 @@
     "@semantic-release/git": "^9.0.0",
     "@sindresorhus/tsconfig": "0.7.0",
     "@types/jest": "^25.2.1",
+    "@types/rimraf": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
     "babel-jest": "^26.0.0",
@@ -128,8 +130,9 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "prettier-plugin-packagejson": "^2.2.3",
+    "rimraf": "^3.0.2",
     "semantic-release": "^17.0.7",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.1-rc"
   },
   "peerDependencies": {
     "babel-plugin-macros": "^2.8.0"

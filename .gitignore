@@ -4,3 +4,5 @@ node_modules
 dist
 coverage
 .jest
+
+src/__tests__/__fixtures__/.ignored/

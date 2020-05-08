@@ -3,7 +3,7 @@
 [![GitHub Actions Build Status](https://github.com/ifiokjr/json.macro/workflows/Node%20CI/badge.svg)](https://github.com/ifiokjr/json.macro/actions?query=workflow%3A%22Node+CI%22)
 [![Version][version]][npm]
 [![Weekly Downloads][downloads-badge]][npm]
-[![Typed Codebase][typescript]](./src/index.ts)
+[![Typed Codebase][typescript]](./json.macro.d.ts)
 ![MIT License][license]
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 

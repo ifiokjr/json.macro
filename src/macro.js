@@ -1,8 +1,9 @@
 import { parseExpression } from '@babel/parser';
+import is from '@sindresorhus/is';
 import { createMacro, MacroError } from 'babel-plugin-macros';
-import { readFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import glob from 'globby';
-import JSON from 'json5';
+import JSON5 from 'json5';
 import get from 'lodash.get';
 import { dirname, resolve } from 'path';
 import findPackageJson from 'pkg-up';
@@ -43,6 +44,35 @@ class JsonMacroError extends MacroError {
 }
 
 /**
+ * Checks if a value is a string or is undefined.
+ *
+ * @param {unknown} value
+ * @returns {value is string}
+ */
+function isStringOrUndefined(value) {
+  return is.string(value) || is.undefined(value);
+}
+
+/**
+ * Check whether the directory structure for a file path exists, and create it
+ * if it doesn't.
+ *
+ * @param {string} filePath
+ *
+ * @returns {void}
+ */
+function ensureDirectoryExists(filePath) {
+  const dir = dirname(filePath);
+
+  if (existsSync(dir)) {
+    return;
+  }
+
+  ensureDirectoryExists(dir);
+  mkdirSync(dir);
+}
+
+/**
  * Prints readable error messages for when loading a json file fails.
  * @param {NodePath} path
  * @param {string} message
@@ -54,16 +84,17 @@ function frameError(path, message) {
 }
 
 /**
- * Evaluates the string value and throws if not found.
- *
+ * Evaluates the value matches the provided `predicate`.
+ * @template Type
+
  * @param {Object} options
  * @param {NodePath | undefined} options.node
  * @param {NodePath} options.parentPath
- * @param {boolean} [options.allowUndefined]
+ * @param {(value: unknown) => value is Type } options.predicate
  *
- * @returns {string}
+ * @returns {Type}
  */
-function evaluateStringNodeValue({ parentPath, node, allowUndefined = false }) {
+function evaluateNodeValue({ parentPath, node, predicate }) {
   let value;
   try {
     value = node?.evaluate().value;
@@ -75,12 +106,12 @@ function evaluateStringNodeValue({ parentPath, node, allowUndefined = false }) {
     );
   }
 
-  const undefinedValueIsAllowed = allowUndefined && value === undefined;
-
-  if (typeof value !== 'string' && !undefinedValueIsAllowed) {
+  if (!predicate(value)) {
     frameError(
       parentPath,
-      `Invalid argument passed to method. Expected 'string' but received '${typeof value}'.`,
+      `Invalid argument passed to function call. Received unsupported type '${is(
+        value,
+      )}'.`,
     );
   }
 
@@ -144,7 +175,7 @@ function loadAndParseJsonFile({ filePath, parentPath }) {
 
   try {
     const fileContent = readFileSync(filePath, { encoding: 'utf-8' });
-    jsonValue = JSON.parse(fileContent);
+    jsonValue = JSON5.parse(fileContent);
   } catch {
     frameError(
       parentPath,
@@ -278,10 +309,10 @@ function loadPackageJson({ reference, state, babel }) {
 
   const node = getArgumentNode({ parentPath, required: false });
   const key = node
-    ? evaluateStringNodeValue({
+    ? evaluateNodeValue({
         node,
         parentPath,
-        allowUndefined: true,
+        predicate: isStringOrUndefined,
       })
     : undefined;
 
@@ -304,10 +335,10 @@ function loadTsConfigJson({ reference, state, babel }) {
 
   const node = getArgumentNode({ parentPath, required: false });
   const searchName = node
-    ? evaluateStringNodeValue({
+    ? evaluateNodeValue({
         node,
         parentPath,
-        allowUndefined: true,
+        predicate: isStringOrUndefined,
       })
     : DEFAULT_SEARCH_NAME;
 
@@ -328,6 +359,50 @@ function loadTsConfigJson({ reference, state, babel }) {
 }
 
 /**
+ * Handles writing a single json file with an optional object path parameter.
+ *
+ * @param {MethodParams} options
+ */
+function writeJson({ reference, state, babel }) {
+  const filename = getFileName(state);
+
+  const { parentPath } = reference;
+  const dir = dirname(filename);
+
+  const json = evaluateNodeValue({
+    node: getArgumentNode({
+      parentPath,
+      required: true,
+      maxArguments: 2,
+      index: 0,
+    }),
+    parentPath,
+    predicate: is.plainObject,
+  });
+
+  const relativeFilePath = evaluateNodeValue({
+    node: getArgumentNode({
+      parentPath,
+      required: true,
+      maxArguments: 2,
+      index: 1,
+    }),
+    parentPath,
+    predicate: is.string,
+  });
+
+  const filePath = resolve(dir, relativeFilePath);
+
+  // Make sure the file path exists.
+  ensureDirectoryExists(filePath);
+
+  // Write to the provided filePath.
+  writeFileSync(filePath, JSON.stringify(json, null, 2), { encoding: 'utf8' });
+
+  replaceParentExpression({ babel, parentPath, value: json });
+}
+
+/**
  * Handles loading a single json file with an optional object path parameter.
  *
  * @param {MethodParams} options
@@ -338,7 +413,7 @@ function loadJson({ reference, state, babel }) {
   const { parentPath } = reference;
   const dir = dirname(filename);
 
-  const rawFilePath = evaluateStringNodeValue({
+  const rawFilePath = evaluateNodeValue({
     node: getArgumentNode({
       parentPath,
       required: true,
@@ -346,20 +421,19 @@ function loadJson({ reference, state, babel }) {
       index: 0,
     }),
     parentPath,
+    predicate: is.string,
   });
 
-  const node = getArgumentNode({
+  const path = evaluateNodeValue({
+    node: getArgumentNode({
+      parentPath,
+      required: false,
+      maxArguments: 2,
+      index: 1,
+    }),
     parentPath,
-    required: false,
-    maxArguments: 2,
-    index: 1,
+    predicate: isStringOrUndefined,
   });
-  const path = node
-    ? evaluateStringNodeValue({
-        node,
-        parentPath,
-      })
-    : undefined;
 
   /** @type {string} */
   let filePath;
@@ -402,9 +476,10 @@ function loadJsonFiles({ reference, state, babel }) {
   }
 
   const globs = argsArray.map((node) => {
-    return evaluateStringNodeValue({
+    return evaluateNodeValue({
       node,
       parentPath,
+      predicate: is.string,
     });
   });
 
@@ -457,6 +532,7 @@ function checkReferenceExists(options) {
 
 /** The supported methods for this macro */
 const supportedMethods = [
+  { name: 'writeJson', method: writeJson },
   { name: 'loadJson', method: loadJson },
   { name: 'loadJsonFiles', method: loadJsonFiles },
   { name: 'getVersion', method: getVersion },
