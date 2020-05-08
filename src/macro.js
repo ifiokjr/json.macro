@@ -201,7 +201,7 @@ function loadAndParsePackageJsonFile(options) {
  * @param {unknown} options.value
  * @param {MacroParams['babel']} options.babel - the babel object
  * @param {NodePath} options.parentPath
- * @param {import('@babel/core').PluginPass} options.state
+ * @param {any} options.state
  */
 function replaceParentExpression(options) {
   const { babel, parentPath, value, state } = options;
