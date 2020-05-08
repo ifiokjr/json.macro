@@ -1,3 +1,10 @@
+### [1.2.4](https://github.com/ifiokjr/json.macro/compare/v1.2.3...v1.2.4) (2020-05-08)
+
+
+### Bug Fixes
+
+* `_temp` undefined error in projects ([5b3090d](https://github.com/ifiokjr/json.macro/commit/5b3090d4198f75d7d631066c4bc2180ae961be28))
+
 ### [1.2.3](https://github.com/ifiokjr/json.macro/compare/v1.2.2...v1.2.3) (2020-05-08)
 
 
