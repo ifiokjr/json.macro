@@ -201,18 +201,12 @@ function loadAndParsePackageJsonFile(options) {
  * @param {unknown} options.value
  * @param {MacroParams['babel']} options.babel - the babel object
  * @param {NodePath} options.parentPath
- * @param {any} options.state
  */
 function replaceParentExpression(options) {
-  const { babel, parentPath, value, state } = options;
+  const { babel, parentPath, value } = options;
 
   const expression = babel.types.parenthesizedExpression(
-    parseExpression(
-      `${state.file.scope.generateUidIdentifier().name} = ${JSON.stringify(
-        value,
-      )}`,
-      {},
-    ),
+    parseExpression(`[${JSON.stringify(value)}][0]`, {}),
   );
 
   parentPath.replaceWith(expression);
@@ -268,7 +262,7 @@ function getVersion({ reference, state, babel }) {
     };
   }
 
-  replaceParentExpression({ babel, parentPath, value, state });
+  replaceParentExpression({ babel, parentPath, value });
 }
 
 /**
@@ -294,7 +288,7 @@ function loadPackageJson({ reference, state, babel }) {
   const jsonValue = loadAndParsePackageJsonFile({ cwd, parentPath });
   const value = key ? jsonValue[key] ?? null : jsonValue;
 
-  replaceParentExpression({ babel, parentPath, value, state });
+  replaceParentExpression({ babel, parentPath, value });
 }
 
 /**
@@ -330,7 +324,7 @@ function loadTsConfigJson({ reference, state, babel }) {
     );
   }
 
-  replaceParentExpression({ babel, parentPath, state, value: result.config });
+  replaceParentExpression({ babel, parentPath, value: result.config });
 }
 
 /**
@@ -382,7 +376,7 @@ function loadJson({ reference, state, babel }) {
   const jsonValue = loadAndParseJsonFile({ filePath, parentPath });
   const value = path ? get(jsonValue, path) : jsonValue;
 
-  replaceParentExpression({ babel, parentPath, value, state });
+  replaceParentExpression({ babel, parentPath, value });
 }
 
 /**
@@ -427,7 +421,7 @@ function loadJsonFiles({ reference, state, babel }) {
     loadAndParseJsonFile({ filePath: resolve(dir, relativePath), parentPath }),
   );
 
-  replaceParentExpression({ babel, parentPath, value, state });
+  replaceParentExpression({ babel, parentPath, value });
 }
 
 /**
