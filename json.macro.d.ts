@@ -1,4 +1,4 @@
-import { PackageJson, SemanticVersionObject, TsConfigJson } from './types';
+import { PackageJson, SemanticVersion, TsConfigJson } from './types';
 
 /**
  * This loads a json file from the provided path. The path can be relative to
@@ -203,4 +203,4 @@ export function loadTsConfigJson(fileName: string): TsConfigJson;
  * ```
  */
 export function getVersion(verbose?: false): string;
-export function getVersion(verbose: true): SemanticVersionObject;
+export function getVersion(verbose: true): SemanticVersion;

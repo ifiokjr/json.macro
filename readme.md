@@ -19,8 +19,6 @@
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [Setup](#setup)
-        - [`.babelrc`](#babelrc)
-        - [`babel.config.js`](#babelconfigjs)
     - [Code Example](#code-example)
   - [API](#api)
     - [`json.macro/types`](#jsonmacrotypes)
@@ -53,7 +51,7 @@ yarn add -D json.macro babel-plugin-macros
 
 Once installed make sure to add the 'babel-plugin-macros' to your `babel.config.js` (or `.babelrc`) file.
 
-##### `.babelrc`
+**`.babelrc`**
 
 ```diff
 {
@@ -64,7 +62,7 @@ Once installed make sure to add the 'babel-plugin-macros' to your `babel.config.
 }
 ```
 
-##### `babel.config.js`
+**`babel.config.js`**
 
 ```diff
 module.exports = {
@@ -123,6 +121,14 @@ import { PackageJson, TsConfigJson } from 'json.macro/types';
 
 let pkg: PackageJson;
 let tsconfig: TsConfigJson;
+```
+
+There is also a `SemanticVersion` interface which exported by the same file. This is the return type for the `getVersion(true)` function call.
+
+```ts
+import { SemanticVersion } from 'json.macro/types';
+
+let version: SemanticVersion;
 ```
 
 <br />
