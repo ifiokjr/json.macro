@@ -1,3 +1,10 @@
+### [1.2.2](https://github.com/ifiokjr/json.macro/compare/v1.2.1...v1.2.2) (2020-05-08)
+
+
+### Bug Fixes
+
+* semantic version object type for `getVersion` ([e4ce973](https://github.com/ifiokjr/json.macro/commit/e4ce9739dfae6929b79a7ae47ab4a898a8e1f27e))
+
 ### [1.2.1](https://github.com/ifiokjr/json.macro/compare/v1.2.0...v1.2.1) (2020-05-07)
 
 

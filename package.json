@@ -1,6 +1,6 @@
 {
   "name": "json.macro",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Directly load json files into your code via babel macros.",
   "keywords": [
     "macros",
