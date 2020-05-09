@@ -38,11 +38,11 @@
       - [Description](#description-3)
       - [Examples](#examples-2)
     - [`loadTsConfigJson()`](#loadtsconfigjson)
-      - [Remarks](#remarks)
+      - [Description](#description-4)
       - [Example](#example-1)
     - [`writeJson()`](#writejson)
       - [Parameters](#parameters-4)
-      - [Remarks](#remarks-1)
+      - [Description](#description-5)
       - [Examples](#examples-3)
     - [`json.macro/types`](#jsonmacrotypes)
   - [Contributing](#contributing)
@@ -121,7 +121,7 @@ import { loadJson } from 'json.macro';
 const myJson = loadJson('./my-json.json');
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const myJson = { custom: 1 };
@@ -133,14 +133,14 @@ Like magic :-)
 
 ## API
 
-| Function                                                | Description                                                                                                                                                                                                                               |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`getVersion(verbose)`](#getversion)                    | Get the semver compatible version from the package.json file.                                                                                                                                                                             |
-| [`loadJson(filePath, path)`](#loadjson)                 | This loads a json file from the provided path. The path can be relative to the file it's being used from, an absolute path, or a path to your <code>node_modules</code> folder.<!-- -->If the file can't be resolved the build will fail. |
-| [`loadJsonFiles(pattern, ...patterns)`](#loadjsonfiles) | Load all the json files matching the provided glob patterns.                                                                                                                                                                              |
-| [`loadPackageJson()`](#loadpackagejson)                 | Load the nearest parent <code>package.json</code> file.                                                                                                                                                                                   |
-| [`loadTsConfigJson()`](#loadtsconfigjson)               | Load the nearest parent <code>tsconfig.json</code> file.                                                                                                                                                                                  |
-| [`writeJson(json, filePath)`](#writejson)               | Write a json object to a relative file path.                                                                                                                                                                                              |
+| Function                                              | Description                                                                                                                                                                                                                               |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [getVersion(verbose)](#getversion)                    | Get the semver compatible version from the package.json file.                                                                                                                                                                             |
+| [loadJson(filePath, path)](#loadjson)                 | This loads a json file from the provided path. The path can be relative to the file it's being used from, an absolute path, or a path to your <code>node_modules</code> folder.<!-- -->If the file can't be resolved the build will fail. |
+| [loadJsonFiles(pattern, ...patterns)](#loadjsonfiles) | Load all the json files matching the provided glob patterns.                                                                                                                                                                              |
+| [loadPackageJson()](#loadpackagejson)                 | Load the nearest parent <code>package.json</code> file.                                                                                                                                                                                   |
+| [loadTsConfigJson()](#loadtsconfigjson)               | Load the nearest parent <code>tsconfig.json</code> file.                                                                                                                                                                                  |
+| [writeJson(json, filePath)](#writejson)               | Write a json object to a relative file path.                                                                                                                                                                                              |
 
 <br />
 
@@ -173,7 +173,7 @@ const versionStringAlt = getVersion(false);
 const versionObject = getVersion(true);
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const versionString = '1.19.2';
@@ -220,7 +220,7 @@ import { loadJson } from 'json.macro';
 const myJson = loadJson('my-json.json');
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const myJson = { custom: 1 };
@@ -289,10 +289,10 @@ export function loadJsonFiles<Type>(
 
 #### Parameters
 
-| Parameter     | Type       | Description                                           |
-| ------------- | ---------- | ----------------------------------------------------- |
-| `pattern`     | `string`   | This function requires at least one json file pattern |
-| `...patterns` | `string[]` | Multiple patterns can be added                        |
+| Parameter   | Type       | Description                                           |
+| ----------- | ---------- | ----------------------------------------------------- |
+| pattern     | `string`   | This function requires at least one json file pattern |
+| ...patterns | `string[]` | Multiple patterns can be also be added.               |
 
 #### Description
 
@@ -306,7 +306,7 @@ import { loadJsonFiles } from 'json.macro';
 const jsonArray = loadJsonFiles('*.json');
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const jsonArray = [{ custom: 1 }, { another: 2 }];
@@ -350,14 +350,14 @@ const packageJson = loadPackageJson();
 const name = loadPackageJson('name');
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const packageJson = { name: 'my-package', version: '1.0.0', private: true };
 const name = '1.0.0';
 ```
 
-For typescript users, the types are automatically inferred using the `PackageJson` type from the \[`type-fest`<!-- -->\](https://github.com/sindresorhus/type-fest) library.
+For typescript users, the types are automatically inferred using the `PackageJson` type from the [`type-fest`](https://github.com/sindresorhus/type-fest) library.
 
 <br />
 
@@ -369,7 +369,7 @@ Load the nearest parent `tsconfig.json` file.
 export function loadTsConfigJson(): TsConfigJson;
 ```
 
-#### Remarks
+#### Description
 
 You can customise the name of the file searched for.
 
@@ -382,7 +382,7 @@ const tsconfig = loadTsConfigJson();
 const customTsConfig = loadTsConfigJson('tsconfig.custom.json');
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const tsconfig = { compilerOptions: {} };
@@ -408,11 +408,7 @@ export function writeJson<Type>(json: Type, filePath: string): Type;
 | json      | `any`    | The json object to be written             |
 | filePath  | `string` | Where the json object will be written to. |
 
-<b>Returns:</b>
-
-Type
-
-#### Remarks
+#### Description
 
 Sometimes it's easier to create an object that needs to follow certain type rules in typescript and then export it to a JSON object. How to do this though?
 
@@ -428,7 +424,7 @@ const json = writeJson<Config>({config: true, type: 'array'}, './config.json);
 
 ```
 
-Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓
 
 ```js
 const json = { config: true, type: 'array' };
