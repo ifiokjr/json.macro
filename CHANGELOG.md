@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/ifiokjr/json.macro/compare/v1.2.4...v1.3.0) (2020-05-09)
+
+
+### Features
+
+* add `writeJson` method ([#2](https://github.com/ifiokjr/json.macro/issues/2)) ([6918107](https://github.com/ifiokjr/json.macro/commit/6918107a2fd9ac74e06e01f33d5143e10a403479))
+
 ### [1.2.4](https://github.com/ifiokjr/json.macro/compare/v1.2.3...v1.2.4) (2020-05-08)
 
 
