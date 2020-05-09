@@ -7,6 +7,8 @@ import { PackageJson, SemanticVersion, TsConfigJson } from './types';
  *
  * If the file can't be resolved the build will fail.
  *
+ * @remarks
+ *
  * For the following json file: `./my-json.json`
  *
  * ```json
@@ -86,11 +88,69 @@ import { PackageJson, SemanticVersion, TsConfigJson } from './types';
  * const value2 = true;
  * ```
  */
-export function loadJson(filePath: string, path?: string): any;
+export function loadJson<Type>(filePath: string, path?: string): Type;
 
 /**
- * Load all the json files matching the provided glob patterns. If no files
- * match then an empty array is returned.
+ * Write a json object to a relative file path.
+ *
+ * @remarks
+ *
+ * Sometimes it's easier to create an object that needs to follow certain type
+ * rules in typescript and then export it to a json object. How to do this
+ * though?
+ *
+ * This method wraps the json object you create (statically and not dynamically)
+ * and will output to the provided filePath at build time.
+ *
+ * @example
+ *
+ * ```ts
+ * import { writeJson } from 'json.macro';
+ *
+ * type Config = {config: boolean, type: 'string' | 'array' };
+ * const json = writeJson<Config>({config: true, type: 'array'}, './config.json);
+ * ```
+ *
+ * Compiles to
+ * ↓ ↓ ↓ ↓ ↓ ↓
+ *
+ * ```js
+ * const json = { config: true, type: 'array' }
+ * ```
+ *
+ * And `./config.json` is written as.
+ *
+ * ```json
+ * {
+ *   "config": true,
+ *   "type": "array"
+ * }
+ * ```
+ *
+ * One thing to be aware of is that this method only supports inline or
+ * statically inferrable values. You can't use any dynamic values, like return
+ * values from a function call.
+ *
+ * ```ts
+ * import { writeJson } from 'json.macro';
+ *
+ * const json = { custom: 'custom' };
+ * const createJson = () => json;
+ *
+ * writeJson({ a: true }, './file.json'); // Static ✅
+ * writeJson(custom, './file.json'); // Static ✅
+ *
+ * writeJson(createJson(), './file.json'); // Dynamic ❌
+ * ```
+ */
+export function writeJson<Type>(json: Type, filePath: string): Type;
+
+/**
+ * Load all the json files matching the provided glob patterns.
+ *
+ * @remarks
+ *
+ * If no files match then an empty array is returned.
  *
  * @example
  *
@@ -116,10 +176,12 @@ export function loadJson(filePath: string, path?: string): any;
  * const jsonArray: Array<{ custom: string}> = loadJsonFiles('*.json');
  * ```
  */
-export function loadJsonFiles(glob: string, ...globs: string[]): any[];
+export function loadJsonFiles<Type>(glob: string, ...globs: string[]): Type[];
 
 /**
  * Load the nearest parent `package.json` file.
+ *
+ * @remarks
  *
  * You can also provide a key property which will load the property
  * corresponding to the key from the nearest `package.json`.
@@ -151,6 +213,8 @@ export function loadPackageJson<Key extends string>(key: Key): PackageJson[Key];
 /**
  * Load the nearest parent `tsconfig.json` file.
  *
+ * @remarks
+ *
  * You can customise the name of the file searched for.
  *
  * @example
@@ -180,7 +244,9 @@ export function loadTsConfigJson(fileName: string): TsConfigJson;
 /**
  * Get the semver compatible version from the package.json file.
  *
- * This will throw a built error if the semver version in your package.json is
+ * @remarks
+ *
+ * This will throw a build error if the semver version in your package.json is
  * not valid.
  *
  * @example

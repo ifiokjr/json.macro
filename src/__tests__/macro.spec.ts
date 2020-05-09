@@ -1,8 +1,13 @@
 import plugin from 'babel-plugin-macros';
 import pluginTester from 'babel-plugin-tester';
+import fs from 'fs';
 import { join } from 'path';
+import rm from 'rimraf';
+const { readFile } = fs.promises;
 
 const macroPath = join(__dirname, '../macro.js');
+const fixtures = (...paths: string[]) =>
+  join(__dirname, '__fixtures__', ...paths);
 
 pluginTester({
   plugin,
@@ -10,7 +15,7 @@ pluginTester({
   title: 'loadTsConfigJson',
   snapshot: true,
   babelOptions: {
-    filename: join(__dirname, '__fixtures__', 'file.js'),
+    filename: fixtures('file.js'),
   },
 
   tests: {
@@ -35,7 +40,7 @@ pluginTester({
     'invalid argument': {
       code: `import { loadTsConfigJson } from '../../macro.js';
       const loadedFile = loadTsConfigJson(['invalid']);`,
-      error: 'Invalid argument passed to method.',
+      error: 'Invalid argument passed to function call.',
       snapshot: false,
     },
     'too many arguments': {
@@ -53,7 +58,7 @@ pluginTester({
   title: 'loadPackageJson',
   snapshot: true,
   babelOptions: {
-    filename: join(__dirname, '__fixtures__', 'file.js'),
+    filename: fixtures('file.js'),
   },
 
   tests: {
@@ -82,7 +87,7 @@ pluginTester({
     'invalid argument': {
       code: `import { loadPackageJson } from '../../macro.js';
       const loadedFile = loadPackageJson(['invalid']);`,
-      error: 'Invalid argument passed to method.',
+      error: 'Invalid argument passed to function call.',
       snapshot: false,
     },
     'too many arguments': {
@@ -164,7 +169,7 @@ pluginTester({
       code: `import { loadJson } from '../macro.js';
       const fileName = () => './__fixtures__/one.test' + '.json';
       const loadedFile = loadJson(fileName());`,
-      error: 'Invalid argument passed to method.',
+      error: 'Invalid argument passed to function call.',
       snapshot: false,
     },
     'invalid json': {
@@ -176,7 +181,7 @@ pluginTester({
     'invalid argument': {
       code: `import { loadJson } from '../macro.js';
         const loadedFile = loadJson(['invalid']);`,
-      error: 'Invalid argument passed to method.',
+      error: 'Invalid argument passed to function call.',
       snapshot: false,
     },
     'too many arguments': {
@@ -191,6 +196,42 @@ pluginTester({
         const otherFile = loadJson('./__fixtures__/three.other.json', 'deeply.nested[0].file.for');
         const noValue = loadJson('./__fixtures__/three.other.json', 'i.dont.exist');
         `,
+    },
+  },
+});
+pluginTester({
+  plugin,
+  pluginName: 'json.macro',
+  title: 'writeJson',
+  snapshot: true,
+  babelOptions: {
+    filename: __filename,
+  },
+
+  tests: {
+    'run correctly': {
+      code: `import { writeJson } from '../macro.js';
+      const a = writeJson({ "a": "B", "c": "D" }, './__fixtures__/.ignored/run-correctly.json');`,
+
+      teardown: async () => {
+        const contents = await readFile(
+          fixtures('.ignored/run-correctly.json'),
+          { encoding: 'utf8' },
+        );
+        expect(JSON.parse(contents)).toEqual({ a: 'B', c: 'D' });
+      },
+    },
+    'runs with deep nesting': {
+      code: `import { writeJson } from '../macro.js';
+      const a = writeJson({ "a": "B", "c": "D" }, './__fixtures__/.ignored/this/is/deeply/nested/deep-nesting.json');`,
+
+      teardown: async () => {
+        const contents = await readFile(
+          fixtures('.ignored/this/is/deeply/nested/deep-nesting.json'),
+          { encoding: 'utf8' },
+        );
+        expect(JSON.parse(contents)).toEqual({ a: 'B', c: 'D' });
+      },
     },
   },
 });
@@ -224,7 +265,7 @@ pluginTester({
      `,
       snapshot: false,
       error:
-        "Invalid argument passed to method. Expected 'string' but received 'boolean'.",
+        "Invalid argument passed to function call. Received unsupported type 'boolean'.",
     },
     'globs without files should error': {
       code: `import { loadJsonFiles } from '../macro.js';
@@ -242,7 +283,7 @@ pluginTester({
   title: 'getVersion',
   snapshot: true,
   babelOptions: {
-    filename: join(__dirname, '__fixtures__', 'file.js'),
+    filename: fixtures('file.js'),
   },
 
   tests: {
@@ -271,7 +312,7 @@ pluginTester({
       error: 'No version found for the resolved `package.json` file.',
       snapshot: false,
       babelOptions: {
-        filename: join(__dirname, '__fixtures__', 'no-version', 'file.js'),
+        filename: fixtures('no-version', 'file.js'),
       },
     },
     'invalid version': {
@@ -281,7 +322,7 @@ pluginTester({
         "A semantic versioning object could not be parsed from the invalid string: 'invalid sever version'",
       snapshot: false,
       babelOptions: {
-        filename: join(__dirname, '__fixtures__', 'invalid-version', 'file.js'),
+        filename: fixtures('invalid-version', 'file.js'),
       },
     },
     'invalid version string': {
@@ -291,8 +332,24 @@ pluginTester({
         "A semantic versioning object could not be parsed from the invalid string: 'invalid sever version'",
       snapshot: false,
       babelOptions: {
-        filename: join(__dirname, '__fixtures__', 'invalid-version', 'file.js'),
+        filename: fixtures('invalid-version', 'file.js'),
       },
     },
   },
 });
+
+function removeIgnored() {
+  return new Promise((resolve, reject) => {
+    rm(fixtures('.ignored'), (error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+beforeAll(removeIgnored);
+afterAll(removeIgnored);

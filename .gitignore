@@ -4,3 +4,8 @@ node_modules
 dist
 coverage
 .jest
+
+src/__tests__/__fixtures__/.ignored/
+tsdoc-metadata.json
+temp/**
+temp/

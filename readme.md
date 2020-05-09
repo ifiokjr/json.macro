@@ -3,7 +3,7 @@
 [![GitHub Actions Build Status](https://github.com/ifiokjr/json.macro/workflows/Node%20CI/badge.svg)](https://github.com/ifiokjr/json.macro/actions?query=workflow%3A%22Node+CI%22)
 [![Version][version]][npm]
 [![Weekly Downloads][downloads-badge]][npm]
-[![Typed Codebase][typescript]](./src/index.ts)
+[![Typed Codebase][typescript]](./json.macro.d.ts)
 ![MIT License][license]
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
@@ -21,6 +21,29 @@
     - [Setup](#setup)
     - [Code Example](#code-example)
   - [API](#api)
+    - [`getVersion()`](#getversion)
+      - [Parameters](#parameters)
+      - [Description](#description)
+      - [Example](#example)
+    - [`loadJson()`](#loadjson)
+      - [Parameters](#parameters-1)
+      - [Description](#description-1)
+      - [Examples](#examples)
+    - [`loadJsonFiles()`](#loadjsonfiles)
+      - [Parameters](#parameters-2)
+      - [Description](#description-2)
+      - [Examples](#examples-1)
+    - [`loadPackageJson()`](#loadpackagejson)
+      - [Parameters](#parameters-3)
+      - [Description](#description-3)
+      - [Examples](#examples-2)
+    - [`loadTsConfigJson()`](#loadtsconfigjson)
+      - [Remarks](#remarks)
+      - [Example](#example-1)
+    - [`writeJson()`](#writejson)
+      - [Parameters](#parameters-4)
+      - [Remarks](#remarks-1)
+      - [Examples](#examples-3)
     - [`json.macro/types`](#jsonmacrotypes)
   - [Contributing](#contributing)
   - [Versioning](#versioning)
@@ -110,7 +133,331 @@ Like magic :-)
 
 ## API
 
-The best way to learn about the API is be reading through the definition file documentation in [`json.macro.d.ts`](https://github.com/ifiokjr/json.macro/blob/master/json.macro.d.ts)
+| Function                                                | Description                                                                                                                                                                                                                               |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`getVersion(verbose)`](#getversion)                    | Get the semver compatible version from the package.json file.                                                                                                                                                                             |
+| [`loadJson(filePath, path)`](#loadjson)                 | This loads a json file from the provided path. The path can be relative to the file it's being used from, an absolute path, or a path to your <code>node_modules</code> folder.<!-- -->If the file can't be resolved the build will fail. |
+| [`loadJsonFiles(pattern, ...patterns)`](#loadjsonfiles) | Load all the json files matching the provided glob patterns.                                                                                                                                                                              |
+| [`loadPackageJson()`](#loadpackagejson)                 | Load the nearest parent <code>package.json</code> file.                                                                                                                                                                                   |
+| [`loadTsConfigJson()`](#loadtsconfigjson)               | Load the nearest parent <code>tsconfig.json</code> file.                                                                                                                                                                                  |
+| [`writeJson(json, filePath)`](#writejson)               | Write a json object to a relative file path.                                                                                                                                                                                              |
+
+<br />
+
+### `getVersion()`
+
+Get the semver compatible version from the package.json file.
+
+```typescript
+export function getVersion(verbose?: false): string;
+export function getVersion(verbose: true): SemanticVersion;
+```
+
+#### Parameters
+
+| Parameter | Type      | Description                                                       |
+| --------- | --------- | ----------------------------------------------------------------- |
+| verbose   | `boolean` | When true will return an object representing the semantic version |
+
+#### Description
+
+This will throw a build error if the semver version in your package.json is not valid.
+
+#### Example
+
+```js
+import { getVersion } from 'json.macro';
+
+const versionString = getVersion();
+const versionStringAlt = getVersion(false);
+const versionObject = getVersion(true);
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const versionString = '1.19.2';
+const versionStringAlt = '1.19.2';
+const versionObject = { major: 1, minor: 19, patch: 2, version: '1.19.2' };
+```
+
+<br />
+
+### `loadJson()`
+
+This loads a json file from the provided path. The path can be relative to the file it's being used from, an absolute path, or a path to your `node_modules` folder.
+
+If the file can't be resolved the build will fail.
+
+```typescript
+export function loadJson<Type>(filePath: string, path?: string): Type;
+```
+
+#### Parameters
+
+| Parameter | Type     | Description                                                 |
+| --------- | -------- | ----------------------------------------------------------- |
+| filePath  | `string` | the relative file path to reference                         |
+| path      | `string` | the object path for the part of the object you want to load |
+
+#### Description
+
+For the following json file: `./my-json.json`
+
+```json
+{
+  "custom": 1
+}
+```
+
+This is how to load it at build time.
+
+#### Examples
+
+```js
+import { loadJson } from 'json.macro';
+
+const myJson = loadJson('my-json.json');
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const myJson = { custom: 1 };
+```
+
+Magic :-)
+
+To load from node_modules you can do something like the following.
+
+```js
+import { loadJson } from 'json.macro';
+
+const jsonFromNode = loadJson('json.macro/package.json');
+```
+
+The above will be replaced with the full package.json file from the json.macro node_modules package.
+
+If you are using typescript you can specify the expected return type by annotating the variable created.
+
+```ts
+import { loadJson } from 'json.macro';
+
+const myJson: { custom: number } = loadJson('my-json.json');
+```
+
+If a second parameter is passed, this can also load a specific key path from a json file.
+
+`./my-json.json`
+
+```json
+{
+  "a": {
+    "b": { "c": { "d": 1 } },
+    "arr": [1, 2, 3, 4, { "end": true }]
+  }
+}
+```
+
+```js
+import { loadJsonPath } from 'json.macro';
+
+const value = loadJsonPath('my-json.json', 'a.b.c.d');
+const value2 = loadJsonPath('my-json.json', 'a.arr.4.end');
+```
+
+Compiles to
+↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const value = 1;
+const value2 = true;
+```
+
+<br />
+
+### `loadJsonFiles()`
+
+Load all the json files matching the provided patterns.
+
+```typescript
+export function loadJsonFiles<Type>(
+  pattern: string,
+  ...patterns: string[]
+): Type[];
+```
+
+#### Parameters
+
+| Parameter     | Type       | Description                                           |
+| ------------- | ---------- | ----------------------------------------------------- |
+| `pattern`     | `string`   | This function requires at least one json file pattern |
+| `...patterns` | `string[]` | Multiple patterns can be added                        |
+
+#### Description
+
+If no files match then an empty array is returned.
+
+#### Examples
+
+```js
+import { loadJsonFiles } from 'json.macro';
+
+const jsonArray = loadJsonFiles('*.json');
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const jsonArray = [{ custom: 1 }, { another: 2 }];
+```
+
+If you are using typescript you can specify the expected return type by annotating the variable created.
+
+```ts
+import { loadJsonFiles } from 'json.macro';
+
+const jsonArray: Array<{ custom: string }> = loadJsonFiles('*.json');
+```
+
+<br />
+
+### `loadPackageJson()`
+
+Load the nearest parent `package.json` file.
+
+```typescript
+export function loadPackageJson(): PackageJson;
+export function loadPackageJson<Key extends string>(key: Key): PackageJson[Key];
+```
+
+#### Parameters
+
+| Parameter | Type                | Description                                                |
+| --------- | ------------------- | ---------------------------------------------------------- |
+| key       | `keyof PackageJson` | The property you want to load from the `package.json` file |
+
+#### Description
+
+You can also provide a key property which will load the property corresponding to the key from the nearest `package.json`<!-- -->.
+
+#### Examples
+
+```js
+import { loadPackageJson } from 'json.macro';
+
+const packageJson = loadPackageJson();
+const name = loadPackageJson('name');
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const packageJson = { name: 'my-package', version: '1.0.0', private: true };
+const name = '1.0.0';
+```
+
+For typescript users, the types are automatically inferred using the `PackageJson` type from the \[`type-fest`<!-- -->\](https://github.com/sindresorhus/type-fest) library.
+
+<br />
+
+### `loadTsConfigJson()`
+
+Load the nearest parent `tsconfig.json` file.
+
+```typescript
+export function loadTsConfigJson(): TsConfigJson;
+```
+
+#### Remarks
+
+You can customise the name of the file searched for.
+
+#### Example
+
+```js
+import { loadTsConfigJson } from 'json.macro';
+
+const tsconfig = loadTsConfigJson();
+const customTsConfig = loadTsConfigJson('tsconfig.custom.json');
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const tsconfig = { compilerOptions: {} };
+const customTsConfig = { compilerOptions: { paths: [] } };
+```
+
+For typescript users, the types are automatically inferred using the `TsConfigJson` type from the \[`type-fest`<!-- -->\](https://github.com/sindresorhus/type-fest) library.
+
+<br />
+
+### `writeJson()`
+
+Write a JSON object to a relative file path.
+
+```typescript
+export function writeJson<Type>(json: Type, filePath: string): Type;
+```
+
+#### Parameters
+
+| Parameter | Type     | Description                               |
+| --------- | -------- | ----------------------------------------- |
+| json      | `any`    | The json object to be written             |
+| filePath  | `string` | Where the json object will be written to. |
+
+<b>Returns:</b>
+
+Type
+
+#### Remarks
+
+Sometimes it's easier to create an object that needs to follow certain type rules in typescript and then export it to a JSON object. How to do this though?
+
+This method wraps the JSON object you create (statically and not dynamically) and will output to the provided `filePath` at build time.
+
+#### Examples
+
+```ts
+import { writeJson } from 'json.macro';
+
+type Config = {config: boolean, type: 'string' | 'array' };
+const json = writeJson<Config>({config: true, type: 'array'}, './config.json);
+
+```
+
+Compiles to ↓ ↓ ↓ ↓ ↓ ↓
+
+```js
+const json = { config: true, type: 'array' };
+```
+
+And `./config.json` is written as.
+
+```json
+{
+  "config": true,
+  "type": "array"
+}
+```
+
+One thing to be aware of is that this method only supports inline or statically inferable values. You can't use any dynamic values, like return values from a function call.
+
+```ts
+import { writeJson } from 'json.macro';
+
+const json = { custom: 'custom' };
+const createJson = () => json;
+
+writeJson({ a: true }, './file.json'); // Static ✅
+writeJson(custom, './file.json'); // Static ✅
+
+writeJson(createJson(), './file.json'); // Dynamic ❌
+```
+
+<br />
 
 ### `json.macro/types`
 

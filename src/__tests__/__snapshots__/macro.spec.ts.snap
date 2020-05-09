@@ -185,3 +185,37 @@ const packageJson = [
 
 
 `;
+
+exports[`writeJson run correctly: run correctly 1`] = `
+
+import { writeJson } from '../macro.js';
+      const a = writeJson({ "a": "B", "c": "D" }, './__fixtures__/.ignored/run-correctly.json');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const a = [
+  {
+    a: 'B',
+    c: 'D',
+  },
+][0];
+
+
+`;
+
+exports[`writeJson runs with deep nesting: runs with deep nesting 1`] = `
+
+import { writeJson } from '../macro.js';
+      const a = writeJson({ "a": "B", "c": "D" }, './__fixtures__/.ignored/this/is/deeply/nested/deep-nesting.json');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const a = [
+  {
+    a: 'B',
+    c: 'D',
+  },
+][0];
+
+
+`;
