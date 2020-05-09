@@ -146,8 +146,11 @@ export function loadJson<Type>(filePath: string, path?: string): Type;
 export function writeJson<Type>(json: Type, filePath: string): Type;
 
 /**
- * Load all the json files matching the provided glob patterns. If no files
- * match then an empty array is returned.
+ * Load all the json files matching the provided glob patterns.
+ *
+ * @remarks
+ *
+ * If no files match then an empty array is returned.
  *
  * @example
  *
@@ -177,6 +180,8 @@ export function loadJsonFiles<Type>(glob: string, ...globs: string[]): Type[];
 
 /**
  * Load the nearest parent `package.json` file.
+ *
+ * @remarks
  *
  * You can also provide a key property which will load the property
  * corresponding to the key from the nearest `package.json`.
@@ -208,6 +213,8 @@ export function loadPackageJson<Key extends string>(key: Key): PackageJson[Key];
 /**
  * Load the nearest parent `tsconfig.json` file.
  *
+ * @remarks
+ *
  * You can customise the name of the file searched for.
  *
  * @example
@@ -237,7 +244,9 @@ export function loadTsConfigJson(fileName: string): TsConfigJson;
 /**
  * Get the semver compatible version from the package.json file.
  *
- * This will throw a built error if the semver version in your package.json is
+ * @remarks
+ *
+ * This will throw a build error if the semver version in your package.json is
  * not valid.
  *
  * @example

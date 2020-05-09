@@ -11,4 +11,9 @@ coverage
 .jest
 
 src/__tests__/__fixtures__/**
-*.md
+temp/**
+tsdoc-metadata.json
+
+docs/api/*.md
+docs/etc/*.md
+CHANGELOG.md
